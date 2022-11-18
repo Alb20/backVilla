@@ -1,0 +1,126 @@
+var citaModelo = require('../modelo/citas');
+var cita = new citaModelo();
+
+
+function prueba(req, res) {
+    res.status(200).send({
+        message: 'Hola esto es para citaControl'
+    });
+}
+
+function registrarCita(req, res) {
+
+    var params = req.body;
+    console.log(params);
+
+    cita.nombre = params.nombre;
+    cita.correo = params.correo;
+    cita.telefono = params.telefono;
+    cita.tipoEvento = params.tipoEvento;
+    cita.fecha = params.fecha;
+    cita.salon = params.salon;
+    cita.numInvitados = params.numInvitados;
+
+    if (cita.nombre != null && cita.correo != null && cita.telefono != null && cita.tipoEvento != null && cita.fecha != null && cita.salon != null && cita.numInvitados != null) {
+        // guardar datos
+        cita.save((err, CitaRegistrada) => {
+            if (err) {
+                res.status(500).send({
+                    message: 'Error al guardar la cita'
+                });
+            } else {
+                if (!CitaRegistrada) {
+                    res.status(404).send({ message: 'No se puede guardar la cita' });
+                } else {
+                    res.status(200).send({
+                        cita: CitaRegistrada,
+                        message: 'Se registro correctamente la cita'
+                    });
+                }
+            }
+        });
+    } else {
+        res.status(500).send({
+            message: 'Introduce los datos'
+        });
+    }
+}
+
+function getCita(req, res) {
+    var citaId = req.params.id;
+    citaModelo.findById(citaId, (err, citaBD) => {
+        if (err) {
+            res.status(500).send({ message: 'Error en mostrar los datos' });
+        } else if (!citaBD) {
+            res.status(404).send({ message: `No exitse una cita con ese id` });
+        } else if (citaBD) {
+            res.status(200).send({
+                cita: citaBD,
+                message: 'Esa es la cita'
+            });
+        }
+    })
+}
+
+// function mostartCitas(req, res) {
+//     if (req.params.page) {
+//         var page = req.params.pages;
+//     } else {
+//         var page = 1
+//     }
+//     var itemPaginas = 10;
+//     citaModelo
+//         .find()
+//         .sort('tipoEvento')
+//         .paginate(page, itemPaginas, function(err, citas, total) {
+//             if (err) {
+//                 res.status(500).send({ message: 'Error de peticion' });
+//             } else {
+//                 if (!citas) {
+//                     res.status(404).send({ message: 'La cita no existe' });
+//                 } else {
+//                     res.status(200).send({ pages: total, citas: citas });
+//                 }
+//             }
+//         });
+// }
+
+function borrarCita(req, res) {
+    var citaId = req.params.id;
+    citaModelo.findByIdAndRemove(citaId, (err, citaRemovida) => {
+        if (err) {
+            res.status(500).send({
+                message: `Error al eliminar la cita con el id  ${citaId}`
+            });
+        } else {
+            res.status(200).send({
+                cita: citaRemovida,
+                message: 'Cita Removida'
+            });
+        }
+    });
+}
+
+function actualizarCita(req, res) {
+    var citaId = req.params.id; //EL ID QUE CORRESPONDE A ESA CITA
+    var datos = req.body; //post
+    citaModelo.findByIdAndUpdate(citaId, datos, (err, actuCita) => {
+        if (err) {
+            res.status(500).send({ message: 'Error al guardar los datos' });
+        } else {
+            if (!actuCita) {
+                res.status(404).send({ message: 'La cita no ha sido actualizada' });
+            } else {
+                res.status(200).send({ cita: actuCita });
+            }
+        }
+    });
+}
+module.exports = {
+    registrarCita,
+    prueba,
+    getCita,
+    borrarCita,
+    actualizarCita,
+    // mostartCitas
+};
