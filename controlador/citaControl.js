@@ -62,28 +62,20 @@ function getCita(req, res) {
     })
 }
 
-// function mostartCitas(req, res) {
-//     if (req.params.page) {
-//         var page = req.params.pages;
-//     } else {
-//         var page = 1
-//     }
-//     var itemPaginas = 10;
-//     citaModelo
-//         .find()
-//         .sort('tipoEvento')
-//         .paginate(page, itemPaginas, function(err, citas, total) {
-//             if (err) {
-//                 res.status(500).send({ message: 'Error de peticion' });
-//             } else {
-//                 if (!citas) {
-//                     res.status(404).send({ message: 'La cita no existe' });
-//                 } else {
-//                     res.status(200).send({ pages: total, citas: citas });
-//                 }
-//             }
-//         });
-// }
+function mostartCitas(req, res) {
+
+    citaModelo.find( function(err, citas, total) {
+            if (err) {
+                res.status(500).send({ message: 'Error de peticion' });
+            } else {
+                if (!citas) {
+                    res.status(404).send({ message: 'La cita no existe' });
+                } else {
+                    res.status(200).send({ pages: total, citas: citas });
+                }
+            }
+        });
+}
 
 function borrarCita(req, res) {
     var citaId = req.params.id;
@@ -122,5 +114,5 @@ module.exports = {
     getCita,
     borrarCita,
     actualizarCita,
-    // mostartCitas
+    mostartCitas
 };

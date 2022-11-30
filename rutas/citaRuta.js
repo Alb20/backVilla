@@ -2,7 +2,7 @@ var express = require('express');
 var CitaControl = require('../controlador/citaControl');
 
 var api = express.Router();
-// api.get('/mostrarCitas/:page?', CitaControl.mostartCitas);
+api.get('/mostrarCitas', CitaControl.mostartCitas);
 api.get('/probando-pruebas', CitaControl.prueba);
 api.post('/registrarCita', CitaControl.registrarCita);
 api.get('/mostrarCita/:id', CitaControl.getCita);
