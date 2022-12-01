@@ -6,7 +6,7 @@ var app = express();
 var user_routers = require('./rutas/citaRuta');
 var admin_routers = require('./rutas/adminRuta');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 //configurar cabeceras http

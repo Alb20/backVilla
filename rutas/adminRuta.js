@@ -3,9 +3,9 @@ var adminControl = require('../controlador/adminControl');
 
 var api = express.Router();
 
-api.get('/pruebasss', adminControl.prueba);
+// api.get('/pruebasss', adminControl.prueba);
 api.post('/registrarAdmin', adminControl.registrarAdmin);
-api.post('/login',adminControl.accesoAdmin);
+api.post('/loginAdmin',adminControl.accesoAdmin);
 
 
 module.exports = api;

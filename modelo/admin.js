@@ -5,7 +5,7 @@ var Shema  = mongoose.Schema;
 var ShemaAdmin = Shema({
     nombre : String,
     apellidos: String,
-    correo: String,
+    email: String,
     password : String
 })
 module.exports = mongoose.model('Admin',ShemaAdmin);

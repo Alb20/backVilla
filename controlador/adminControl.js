@@ -1,80 +1,73 @@
 const bcrypt = require('bcrypt');
-const {param} = require('../app');
-const admin = require('../modelo/admin');
-var adminModel = require('../modelo/admin');
-
-
-function prueba (req,res){
-    res.status(200).send({message:'Todo fuinciona correctamente'});
-}
-
+const { Admin } = require('mongodb');
+var modelAdmin = require('../modelo/admin');
+var admin = new modelAdmin();
 
 function registrarAdmin (req,res){
-    var admin = new adminModel;
     var params = req.body;
-    console.log(params);
+    console.log (params);
 
     admin.nombre = params.nombre;
     admin.apellidos = params.apellidos;
-    admin.correo = params.correo;
+    admin.email = params.email;
     admin.password = params.password;
 
     if(params.password){
         bcrypt.hash(params.password,10,function(err,hash){
-            admin.password = hash;
-            if(admin.nombre !=null&& admin.apellidos != null && admin.correo != null){
-                admin.save ((err,AdminGuardado)=>{
+            admin.password=hash;
+            if (admin.nombre != null && admin.apellidos != null && admin.email != null){
+                //guardar al admin
+                admin.save( (err,AdminAlmacenado) =>{
                     if(err){
-                        res.status(500).send({message : 'Error'});
+                        res.status(500).send({message:'Error al guardar el administrador'});
                     }else{
-                        if(!AdminGuardado){
-                            res.status(404).send({message:'No se ha registrado al adamin '});
+                        if (!AdminAlmacenado){
+                            res.status(404).send({message:'No se ha registrado al Administrador'})
                         }else{
-                            res.status(200).send({message:'Admin Guardado con exito',Administrador:AdminGuardado});
+                            //nos devuelve losdatos de l ususario añlmacenado
+                            res.status(200).send({administrador:AdminAlmacenado});
                         }
                     }
                 });
             }else{
-                res.status(200).send({message:'Introduce los datos en los campos'});
+                res.status(200).send({message:'Introduce los campos'});
             }
         });
     }else{
-        res.status(500).send({message:'Introduce la contraseña'});
+        res.status(500).send({message:'Inroduce la contraseña'})
     }
 }
 function accesoAdmin (req,res){
- var params = req.body;
+    var params = req.body;
+    var email = params.email;
+    var password =  params.password;
 
- var correo = params.correo;
- var password = params.password;
-
- admin.findOne({correo:correo},(err,Admin)=>{
-    if (err){
-        res.status(500).send({message:'Error en la peticion'});
-    }else{
-        if(!Admin){
-            res.status(404).send({message:'El usuario no existe'});
+    modelAdmin.findOne({email:email},(err,Ad)=>{
+        if(err){
+            res.status(500).send({message:'Error en la peticion'});
         }else{
-            bcrypt.compare(password,admin.password,function (err,check){
-                if(check){
-                    console.log('La contraseña coincide');
-                    if(params.gethash){
+            if(!Ad){
+                res.status(404).send({message:'El usuario no existe'});
+            }else{
+                bcrypt.compare(password,admin.password,function(err,check){
+                    if(check){
+                        //devolver los datos del ususario llegado
+                        console.log('Coincide la contraseña');
+                        if(params.gethash){
 
+                        }else{
+                            res.status(200).send({administrador:Ad});
+                        }
                     }else{
-                        res.status(200).send({Administrador: Admin});
+                        res.status(404).send({message:'El usuario no se ha identificado'});
                     }
-                }else{
-                    res.status(404).send({message:'El usuario no se ha identifiacdo'});
-                }
-            });   
+                });
+            }
         }
-    }
- });
+    });
 }
 
 module.exports = {
     registrarAdmin,
-    prueba,
     accesoAdmin
 };
-
