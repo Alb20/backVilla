@@ -26,7 +26,7 @@ function registrarAdmin (req,res){
     admin.apellidos = params.apellidos;
     admin.email = params.email;
     admin.password = params.password;
-    admin.imagen = 'null'
+    admin.imagen = 'null';
 
     if(params.password){
         bcrypt.hash(params.password,10,function(err,hash){
