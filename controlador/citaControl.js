@@ -2,15 +2,10 @@ var citaModelo = require('../modelo/citas');
 var cita = new citaModelo();
 
 
-function prueba(req, res) {
-    res.status(200).send({
-        message: 'Hola esto es para citaControl'
-    });
-}
-
 function registrarCita(req, res) {
 
     var params = req.body;
+   
     console.log(params);
 
     cita.nombre = params.nombre;
@@ -34,8 +29,10 @@ function registrarCita(req, res) {
                 } else {
                     res.status(200).send({
                         cita: CitaRegistrada,
-                        message: 'Se registro correctamente la cita'
+                        message: 'Se registro correctamente la cita',
+                        
                     });
+                    console.log('Se registro la cita correctamente')
                 }
             }
         });
@@ -96,6 +93,8 @@ function borrarCita(req, res) {
 function actualizarCita(req, res) {
     var citaId = req.params.id; //EL ID QUE CORRESPONDE A ESA CITA
     var datos = req.body; //post
+    nombre = datos.nombre;
+
     citaModelo.findByIdAndUpdate(citaId, datos, (err, actuCita) => {
         if (err) {
             res.status(500).send({ message: 'Error al guardar los datos' });
@@ -110,7 +109,6 @@ function actualizarCita(req, res) {
 }
 module.exports = {
     registrarCita,
-    prueba,
     getCita,
     borrarCita,
     actualizarCita,
