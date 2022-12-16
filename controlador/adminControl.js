@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
-const { Admin } = require('mongodb');
 var modelAdmin = require('../modelo/admin');
-var admin = new modelAdmin();
+var jwt = require ('../servicio/jwt');
 var fs = require('fs');
 var path = require('path');
+
 
 function  mostrarAdmin (req,res){
 
@@ -19,6 +19,7 @@ modelAdmin.findById(adminId,(err,administrador)=>{
 })
 }
 function registrarAdmin (req,res){
+    var admin = new modelAdmin();
     var params = req.body;
     console.log (params);
 
@@ -70,6 +71,7 @@ function accesoAdmin (req,res){
                         //devolver los datos del ususario llegado
                         console.log('Coincide la contraseña');
                         if(params.gethash){
+                            res.status(200).send({token:jwt.createToken(admin)});
 
                         }else{
                             res.status(200).send({administrador:Ad});
@@ -129,15 +131,40 @@ function borrarAdmin (req,res){
 }
 function getFotoAdmin (req,res){
     var imageFile = req.params.imageFile;
-    var rutaFoto = '../cargas/imagenesAdmin/' + imageFile;
+    var rutaFoto = './cargas/imagenesAdmin/' + imageFile;
     console.log(imageFile);
-    fs.existsSync(rutaFoto,function(existe){
+    fs.exists(rutaFoto,function(existe){
         if(existe){
             res.sendFile(path.resolve(rutaFoto));
         }else{
             res.status(404).send({message:'No hay una imgen con ese nombre'});
         }
     });
+}
+function actualizarFoto (req,res){
+    var AdminId = req.params.id;
+    if (req.files){
+        var file_path =  req.files.image.path;
+        var file_arreglo = file_path.split('./cargas/imagenesAdmin/');
+        var file_name = file.split[2];
+        var extension = file_arreglo[2].split('\.');
+        if (extension[1]== 'png'||extension[1] =='gif'|| extension[1] == 'jpg'){
+            modelAdmin.findByIdAndUpdate(AdminId,{imagen:file_arreglo[2]},(err,Adm)=>{
+                if(err){
+                    res.status(500).send({message:'Error al buscar el usuario'});
+                }
+                if ( !Adm){
+                    res.status(404).send({message:'Error en el id'});
+                }else{
+                    res.status(200).send({image:file_name,Admin:Adm});
+                }
+            });
+        }else{
+            res.status(404).send({message:'El formato no es adecuado'});
+        }
+    }else{
+        res.status(404).send({message:'No cargo el archivo...'});
+    }
 }
 
 module.exports = {
@@ -147,5 +174,6 @@ module.exports = {
     mostrarAdmins,
     borrarAdmin,
     mostrarAdmin,
-    getFotoAdmin
+    getFotoAdmin,
+    actualizarFoto
 };

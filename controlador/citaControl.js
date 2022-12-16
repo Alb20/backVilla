@@ -1,9 +1,9 @@
 var citaModelo = require('../modelo/citas');
-var cita = new citaModelo();
+
 
 
 function registrarCita(req, res) {
-
+    const cita = new citaModelo();
     var params = req.body;
    
     console.log(params);
