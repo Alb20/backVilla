@@ -7,6 +7,7 @@ function registrarCita(req, res) {
     var params = req.body;
    
     console.log(params);
+    
 
     cita.nombre = params.nombre;
     cita.correo = params.correo;
@@ -28,11 +29,17 @@ function registrarCita(req, res) {
                     res.status(404).send({ message: 'No se puede guardar la cita' });
                 } else {
                     res.status(200).send({
-                        cita: CitaRegistrada,
-                        message: 'Se registro correctamente la cita',
-                        
+                        "id":CitaRegistrada._id,
+                        "Nombre": CitaRegistrada.nombre,
+                        "Correo":CitaRegistrada.correo,
+                        "Telefono":CitaRegistrada.telefono,
+                        "TipoEvento":CitaRegistrada.tipoEvento,
+                        "Fecha":CitaRegistrada.fecha,
+                        "Salon":CitaRegistrada.salon,
+                        "NumInvitados":CitaRegistrada.numInvitados
                     });
                     console.log('Se registro la cita correctamente')
+                    console.log(`Con id ${CitaRegistrada._id}`)
                 }
             }
         });
@@ -49,11 +56,17 @@ function getCita(req, res) {
         if (err) {
             res.status(500).send({ message: 'Error en mostrar los datos' });
         } else if (!citaBD) {
-            res.status(404).send({ message: `No exitse una cita con ese id` });
+            res.status(404).send({ message: `No exitse una cita con el id ${citaId}` });
         } else if (citaBD) {
             res.status(200).send({
-                cita: citaBD,
-                message: 'Esa es la cita'
+                "id":citaBD._id,
+                "Nombre": citaBD.nombre,
+                "Correo":citaBD.correo,
+                "Telefono":citaBD.telefono,
+                "TipoEvento":citaBD.tipoEvento,
+                "Fecha":citaBD.fecha,
+                "Salon":citaBD.salon,
+                "NumInvitados":citaBD.numInvitados
             });
         }
     })
@@ -61,17 +74,15 @@ function getCita(req, res) {
 
 function mostartCitas(req, res) {
 
-    citaModelo.find( function(err, citas, total) {
+    citaModelo.find((err, citas) =>{
             if (err) {
                 res.status(500).send({ message: 'Error de peticion' });
-            } else {
-                if (!citas) {
-                    res.status(404).send({ message: 'La cita no existe' });
-                } else {
-                    res.status(200).send({ pages: total, citas: citas });
+            } else if (!citas) {
+                    res.status(404).send({ message: `No existen citas registradas` });
+                } else if(citas){
+                    res.status(200).send({citas});
                 }
-            }
-        });
+            });
 }
 
 function borrarCita(req, res) {
@@ -81,11 +92,14 @@ function borrarCita(req, res) {
             res.status(500).send({
                 message: `Error al eliminar la cita con el id  ${citaId}`
             });
-        } else {
+        }if (!citaRemovida){
+            res.status(404).send({message:`Ya se eleimino la cita con el Id ${citaId}` })
+        } 
+        else {
             res.status(200).send({
-                cita: citaRemovida,
-                message: 'Cita Removida'
+                message: 'Cita borrada correctamente'
             });
+            console.log(`Se borro correctamente la cita con el id ${citaId}`)
         }
     });
 }
@@ -102,7 +116,15 @@ function actualizarCita(req, res) {
             if (!actuCita) {
                 res.status(404).send({ message: 'La cita no ha sido actualizada' });
             } else {
-                res.status(200).send({ cita: actuCita });
+                res.status(200).send({  
+                "id":actuCita._id,
+                "Nombre": actuCita.nombre,
+                "Correo":actuCita.correo,
+                "Telefono":actuCita.telefono,
+                "TipoEvento":actuCita.tipoEvento,
+                "Fecha":actuCita.fecha,
+                "Salon":actuCita.salon,
+                "NumInvitados":actuCita.numInvitados  });
             }
         }
     });

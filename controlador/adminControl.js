@@ -42,7 +42,13 @@ function registrarAdmin (req,res){
                             res.status(404).send({message:'No se ha registrado al Administrador'})
                         }else{
                             //nos devuelve losdatos de l ususario añlmacenado
-                            res.status(200).send({administrador:AdminAlmacenado});
+                            res.status(200).send([{
+                                "id": AdminAlmacenado._id,
+                                "nombre": AdminAlmacenado.nombre,
+                                "apellido":AdminAlmacenado.apellidos,
+                                "email": AdminAlmacenado.email,
+                                "password":AdminAlmacenado.password
+                            }]);
                         }
                     }
                 });
